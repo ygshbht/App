@@ -1161,7 +1161,7 @@ function showReportActionNotification(reportID, action) {
         return;
     }
 
-    Log.info('[LOCAL_NOTIFICATION] Creating notification');
+    // Notification should be shown, assuming they are available for the current platform
     LocalNotification.showCommentNotification({
         reportAction: action,
         onClick: () => {
