@@ -17,9 +17,15 @@ import Form from '../components/Form';
 import ROUTES from '../ROUTES';
 import * as PlaidDataProps from './ReimbursementAccount/plaidDataPropTypes';
 import ConfirmationPage from '../components/ConfirmationPage';
+import Text from "../components/Text";
+import TextLink from "../components/TextLink";
+import {View} from "react-native";
 
 const propTypes = {
     ...withLocalizePropTypes,
+
+    /** If the user has been throttled from Plaid */
+    isPlaidDisabled: PropTypes.bool,
 
     /** Contains plaid data */
     plaidData: PlaidDataProps.plaidDataPropTypes,
@@ -41,6 +47,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+    isPlaidDisabled: false,
     plaidData: PlaidDataProps.plaidDataDefaultProps,
     personalBankAccount: {
         error: '',
@@ -83,6 +90,22 @@ class AddPersonalBankAccountPage extends React.Component {
 
     render() {
         const shouldShowSuccess = lodashGet(this.props, 'personalBankAccount.shouldShowSuccess', false);
+
+        if (this.props.isPlaidDisabled) {
+            return (
+                <ScreenWrapper>
+                    <HeaderWithBackButton
+                        title={this.props.translate('bankAccount.addBankAccount')}
+                        onBackButtonPress={() => Navigation.goBack(ROUTES.SETTINGS_PAYMENTS)}
+                    />
+                    <View style={[styles.m5]}>
+                        <Text style={[styles.formError]}>
+                            {this.props.translate('bankAccount.plaidThrottledError')}
+                        </Text>
+                    </View>
+                </ScreenWrapper>
+            );
+        }
 
         return (
             <ScreenWrapper
@@ -142,6 +165,9 @@ export default compose(
         },
         plaidData: {
             key: ONYXKEYS.PLAID_DATA,
+        },
+        isPlaidDisabled: {
+            key: ONYXKEYS.IS_PLAID_DISABLED,
         },
     }),
 )(AddPersonalBankAccountPage);
