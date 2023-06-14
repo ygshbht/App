@@ -391,6 +391,15 @@ function openWorkspaceView() {
     API.read('OpenWorkspaceView');
 }
 
+function handlePlaidError(bankAccountID, error, error_description, plaidRequestID) {
+    API.write('BankAccount_HandlePlaidError', {
+        bankAccountID,
+        error,
+        error_description,
+        plaidRequestID,
+    });
+}
+
 /**
  * Set the reimbursement account loading so that it happens right away, instead of when the API command is processed.
  *
@@ -409,6 +418,7 @@ export {
     connectBankAccountManually,
     connectBankAccountWithPlaid,
     deletePaymentBankAccount,
+    handlePlaidError,
     openPersonalBankAccountSetupView,
     openReimbursementAccountPage,
     updateBeneficialOwnersForBankAccount,
