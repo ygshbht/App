@@ -95,14 +95,64 @@ export default {
     IOU_SEND_ADD_BANK_ACCOUNT: `${IOU_SEND}/add-bank-account`,
     IOU_SEND_ADD_DEBIT_CARD: `${IOU_SEND}/add-debit-card`,
     IOU_SEND_ENABLE_PAYMENTS: `${IOU_SEND}/enable-payments`,
-    getMoneyRequestRoute: (iouType, reportID = '') => `${iouType}/new/${reportID}`,
-    getMoneyRequestAmountRoute: (iouType, reportID = '') => `${iouType}/new/amount/${reportID}`,
-    getMoneyRequestParticipantsRoute: (iouType, reportID = '') => `${iouType}/new/participants/${reportID}`,
-    getMoneyRequestConfirmationRoute: (iouType, reportID = '') => `${iouType}/new/confirmation/${reportID}`,
-    getMoneyRequestCurrencyRoute: (iouType, reportID = '', currency, backTo) => `${iouType}/new/currency/${reportID}?currency=${currency}&backTo=${backTo}`,
-    getMoneyRequestDescriptionRoute: (iouType, reportID = '') => `${iouType}/new/description/${reportID}`,
+    getMoneyRequestRoute: (iouType, reportID = '', currency) => {
+        let url = `${iouType}/new/${reportID}`;
+        if (currency) {
+            url += `?currency=${currency}`;
+        }
+        return url;
+    },
+    getMoneyRequestAmountRoute: (iouType, reportID = '', currency) => {
+        let url = `${iouType}/new/amount/${reportID}`;
+        if (currency) {
+            url += `?currency=${currency}`;
+        }
+        return url;
+    },
+    getMoneyRequestParticipantsRoute: (iouType, reportID = '', currency) => {
+        let url = `${iouType}/new/participants/${reportID}`;
+        if (currency) {
+            url += `?currency=${currency}`;
+        }
+        return url;
+    },
+    getMoneyRequestConfirmationRoute: (iouType, reportID = '', currency) => {
+        let url = `${iouType}/new/confirmation/${reportID}`;
+        if (currency) {
+            url += `?currency=${currency}`;
+        }
+        return url;
+    },
+    getMoneyRequestCurrencyRoute: (iouType, reportID = '', currency, backTo) => {
+        let url = `${iouType}/new/currency/${reportID}`;
+        const params = [];
+        if (currency) {
+            params.push(`currency=${currency}`);
+        }
+        if (backTo) {
+            params.push(`backTo=${backTo}`);
+        }
+        if (params.length) {
+            url += `?${params.join('&')}`;
+        }
+        return url;
+    },
+
+    getMoneyRequestDescriptionRoute: (iouType, reportID = '', currency) => {
+        let url = `${iouType}/new/description/${reportID}`;
+        if (currency) {
+            url += `?currency=${currency}`;
+        }
+        return url;
+    },
     SPLIT_BILL_DETAILS: `r/:reportID/split/:reportActionID`,
-    getSplitBillDetailsRoute: (reportID, reportActionID) => `r/${reportID}/split/${reportActionID}`,
+    getSplitBillDetailsRoute: (reportID, reportActionID, currency) => {
+        let url = `r/${reportID}/split/${reportActionID}`;
+        if (currency) {
+            url += `?currency=${currency}`;
+        }
+        return url;
+    },
     getNewTaskRoute: (reportID) => `${NEW_TASK}/${reportID}`,
     NEW_TASK_WITH_REPORT_ID: `${NEW_TASK}/:reportID?`,
     TASK_TITLE: 'r/:reportID/title',

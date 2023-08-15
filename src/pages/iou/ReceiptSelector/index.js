@@ -87,7 +87,7 @@ function ReceiptSelector(props) {
     const {isSmallScreenWidth} = useWindowDimensions();
     const {translate} = useLocalize();
     const {isDraggingOver} = useContext(DragAndDropContext);
-
+    const currency = lodashGet(props.route, 'params.currency', '') || props.iou.currency;
     /**
      * Sets the Receipt objects and navigates the user to the next page
      * @param {Object} file
@@ -101,7 +101,7 @@ function ReceiptSelector(props) {
 
         const filePath = URL.createObjectURL(file);
         IOU.setMoneyRequestReceipt(filePath, file.name);
-        IOU.navigateToNextPage(iou, iouType, reportID, report);
+        IOU.navigateToNextPage(iou, iouType, reportID, report, currency);
     };
 
     return (

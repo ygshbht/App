@@ -48,6 +48,8 @@ class MoneyRequestDescriptionPage extends Component {
         this.navigateBack = this.navigateBack.bind(this);
         this.iouType = lodashGet(props.route, 'params.iouType', '');
         this.reportID = lodashGet(props.route, 'params.reportID', '');
+        this.reportID = lodashGet(props.route, 'params.reportID', '');
+        this.currency = lodashGet(this.props.route, 'params.currency', '') || props.iou.currency;
     }
 
     componentDidMount() {
@@ -58,7 +60,7 @@ class MoneyRequestDescriptionPage extends Component {
         }
 
         if (_.isEmpty(this.props.iou.participants) || (this.props.iou.amount === 0 && !this.props.iou.receiptPath) || shouldReset) {
-            Navigation.goBack(ROUTES.getMoneyRequestRoute(this.iouType, this.reportID), true);
+            Navigation.goBack(ROUTES.getMoneyRequestRoute(this.iouType, this.reportID, this.currency), true);
         }
     }
 
@@ -68,13 +70,13 @@ class MoneyRequestDescriptionPage extends Component {
         if (_.isEmpty(this.props.iou.participants) || (this.props.iou.amount === 0 && !this.props.iou.receiptPath) || prevProps.iou.id !== this.props.iou.id) {
             // The ID is cleared on completing a request. In that case, we will do nothing.
             if (this.props.iou.id) {
-                Navigation.goBack(ROUTES.getMoneyRequestRoute(this.iouType, this.reportID), true);
+                Navigation.goBack(ROUTES.getMoneyRequestRoute(this.iouType, this.reportID, this.currency), true);
             }
         }
     }
 
     navigateBack() {
-        Navigation.goBack(ROUTES.getMoneyRequestConfirmationRoute(this.iouType, this.reportID));
+        Navigation.goBack(ROUTES.getMoneyRequestConfirmationRoute(this.iouType, this.reportID, this.currency));
     }
 
     /**

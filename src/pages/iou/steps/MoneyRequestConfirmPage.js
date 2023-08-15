@@ -73,13 +73,13 @@ function MoneyRequestConfirmPage(props) {
                 : OptionsListUtils.getParticipantsOptions(props.iou.participants, props.personalDetails),
         [props.iou.participants, props.personalDetails],
     );
-
+    const currency = lodashGet(props.route, 'params.currency', '') || props.iou.currency;
     useEffect(() => {
         // ID in Onyx could change by initiating a new request in a separate browser tab or completing a request
         if (prevMoneyRequestId.current !== props.iou.id) {
             // The ID is cleared on completing a request. In that case, we will do nothing.
             if (props.iou.id) {
-                Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType.current, reportID.current), true);
+                Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType.current, reportID.current, currency), true);
             }
             return;
         }
@@ -92,20 +92,20 @@ function MoneyRequestConfirmPage(props) {
         }
 
         if (_.isEmpty(props.iou.participants) || (props.iou.amount === 0 && !props.iou.receiptPath) || shouldReset) {
-            Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType.current, reportID.current), true);
+            Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType.current, reportID.current, currency), true);
         }
 
         return () => {
             prevMoneyRequestId.current = props.iou.id;
         };
-    }, [props.iou.participants, props.iou.amount, props.iou.id, props.iou.receiptPath]);
+    }, [props.iou.participants, props.iou.amount, currency, props.iou.id, props.iou.receiptPath, props.route]);
 
     const navigateBack = () => {
         let fallback;
         if (reportID.current) {
-            fallback = ROUTES.getMoneyRequestRoute(iouType.current, reportID.current);
+            fallback = ROUTES.getMoneyRequestRoute(iouType.current, reportID.current, currency);
         } else {
-            fallback = ROUTES.getMoneyRequestParticipantsRoute(iouType.current);
+            fallback = ROUTES.getMoneyRequestParticipantsRoute(iouType.current, undefined, currency);
         }
         Navigation.goBack(fallback);
     };
@@ -120,7 +120,7 @@ function MoneyRequestConfirmPage(props) {
             IOU.requestMoney(
                 props.report,
                 props.iou.amount,
-                props.iou.currency,
+                currency,
                 props.currentUserPersonalDetails.login,
                 props.currentUserPersonalDetails.accountID,
                 selectedParticipants[0],
@@ -128,7 +128,7 @@ function MoneyRequestConfirmPage(props) {
                 receipt,
             );
         },
-        [props.report, props.iou.amount, props.iou.currency, props.currentUserPersonalDetails.login, props.currentUserPersonalDetails.accountID],
+        [props.report, props.iou.amount, currency, props.currentUserPersonalDetails.login, props.currentUserPersonalDetails.accountID],
     );
 
     const createTransaction = useCallback(
@@ -191,7 +191,7 @@ function MoneyRequestConfirmPage(props) {
      */
     const sendMoney = useCallback(
         (paymentMethodType) => {
-            const currency = props.iou.currency;
+            // const currency = props.iou.currency;
             const trimmedComment = props.iou.comment.trim();
             const participant = participants[0];
 
@@ -209,7 +209,7 @@ function MoneyRequestConfirmPage(props) {
                 IOU.sendMoneyWithWallet(props.report, props.iou.amount, currency, trimmedComment, props.currentUserPersonalDetails.accountID, participant);
             }
         },
-        [props.iou.amount, props.iou.comment, participants, props.iou.currency, props.currentUserPersonalDetails.accountID, props.report],
+        [props.iou.amount, props.iou.comment, participants, props.currentUserPersonalDetails.accountID, props.report, currency],
     );
 
     return (
@@ -225,7 +225,7 @@ function MoneyRequestConfirmPage(props) {
                         selectedParticipants={participants}
                         iouAmount={props.iou.amount}
                         iouComment={props.iou.comment}
-                        iouCurrencyCode={props.iou.currency}
+                        iouCurrencyCode={currency}
                         onConfirm={createTransaction}
                         onSendMoney={sendMoney}
                         onSelectParticipant={(option) => {

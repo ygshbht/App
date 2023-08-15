@@ -99,6 +99,7 @@ function ReceiptSelector(props) {
     const {translate} = useLocalize();
     // Keep track of whether the camera is visible, when we navigate elsewhere, turn off the camera
     const isFocused = useIsFocused();
+    const currency = lodashGet(props.route, 'params.currency', '') || props.iou.currency;
 
     // We want to listen to if the app has come back from background and refresh the permissions status to show camera when permissions were granted
     useEffect(() => {
@@ -203,7 +204,7 @@ function ReceiptSelector(props) {
             })
             .then((photo) => {
                 IOU.setMoneyRequestReceipt(`file://${photo.path}`, photo.path);
-                IOU.navigateToNextPage(props.iou, iouType, reportID, props.report);
+                IOU.navigateToNextPage(props.iou, iouType, reportID, props.report, currency);
             })
             .catch(() => {
                 showCameraAlert();
@@ -267,7 +268,7 @@ function ReceiptSelector(props) {
                         showImagePicker(launchImageLibrary)
                             .then((receiptImage) => {
                                 IOU.setMoneyRequestReceipt(receiptImage[0].uri, receiptImage[0].fileName);
-                                IOU.navigateToNextPage(props.iou, iouType, reportID, props.report);
+                                IOU.navigateToNextPage(props.iou, iouType, reportID, props.report, currency);
                             })
                             .catch(() => {
                                 Log.info('User did not select an image from gallery');

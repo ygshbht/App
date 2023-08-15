@@ -113,7 +113,7 @@ function NewRequestAmountPage({route, iou, report}) {
                 if (!iou.id) {
                     return;
                 }
-                Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType, reportID), true);
+                Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType, reportID, currency), true);
                 return;
             }
             const moneyRequestID = `${iouType}${reportID}`;
@@ -123,17 +123,17 @@ function NewRequestAmountPage({route, iou, report}) {
             }
 
             if (_.isEmpty(iou.participants) || iou.amount === 0 || shouldReset) {
-                Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType, reportID), true);
+                Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType, reportID, currency), true);
             }
         }
 
         return () => {
             prevMoneyRequestID.current = iou.id;
         };
-    }, [iou.participants, iou.amount, iou.id, isEditing, iouType, reportID]);
+    }, [iou.participants, iou.amount, iou.id, isEditing, iouType, reportID, currency]);
 
     const navigateBack = () => {
-        Navigation.goBack(isEditing ? ROUTES.getMoneyRequestConfirmationRoute(iouType, reportID) : null);
+        Navigation.goBack(isEditing ? ROUTES.getMoneyRequestConfirmationRoute(iouType, reportID, currency) : null);
     };
 
     const navigateToCurrencySelectionPage = () => {
@@ -148,11 +148,11 @@ function NewRequestAmountPage({route, iou, report}) {
         IOU.setMoneyRequestCurrency(currency);
 
         if (isEditing) {
-            Navigation.goBack(ROUTES.getMoneyRequestConfirmationRoute(iouType, reportID));
+            Navigation.goBack(ROUTES.getMoneyRequestConfirmationRoute(iouType, reportID, currency));
             return;
         }
 
-        IOU.navigateToNextPage(iou, iouType, reportID, report);
+        IOU.navigateToNextPage(iou, iouType, reportID, report, currency);
     };
 
     const content = (

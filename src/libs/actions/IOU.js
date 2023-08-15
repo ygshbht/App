@@ -19,6 +19,7 @@ import DateUtils from '../DateUtils';
 import TransactionUtils from '../TransactionUtils';
 import * as ErrorUtils from '../ErrorUtils';
 import * as UserUtils from '../UserUtils';
+import * as SessionUtils from '../SessionUtils';
 import * as Report from './Report';
 import * as NumberUtils from '../NumberUtils';
 
@@ -52,12 +53,6 @@ Onyx.connect({
 });
 
 let currentUserPersonalDetails = {};
-Onyx.connect({
-    key: ONYXKEYS.PERSONAL_DETAILS_LIST,
-    callback: (val) => {
-        currentUserPersonalDetails = lodashGet(val, userAccountID, {});
-    },
-});
 
 let currentDate = '';
 Onyx.connect({
@@ -67,13 +62,9 @@ Onyx.connect({
     },
 });
 
-/**
- * Reset money request info from the store with its initial value
- * @param {String} id
- */
 function resetMoneyRequestInfo(id = '') {
     const date = currentDate || moment().format('YYYY-MM-DD');
-    Onyx.merge(ONYXKEYS.IOU, {
+    const data = {
         id,
         amount: 0,
         currency: lodashGet(currentUserPersonalDetails, 'localCurrencyCode', CONST.CURRENCY.USD),
@@ -83,8 +74,29 @@ function resetMoneyRequestInfo(id = '') {
         date,
         receiptPath: '',
         receiptSource: '',
-    });
+    };
+    Onyx.merge(ONYXKEYS.IOU, data);
+    return data;
 }
+
+let shouldResetIOUAfterLogin = true; // add this variable
+
+Onyx.connect({
+    key: ONYXKEYS.PERSONAL_DETAILS_LIST,
+    callback: (val) => {
+        currentUserPersonalDetails = lodashGet(val, userAccountID, {});
+        if (val && SessionUtils.didUserLogInDuringSession() && shouldResetIOUAfterLogin) {
+            resetMoneyRequestInfo();
+            shouldResetIOUAfterLogin = false;
+        }
+    },
+});
+
+/**
+ * Reset money request info from the store with its initial value
+ * @param {String} id
+ * @returns {Object} newUpdatedData
+ */
 
 function buildOnyxDataForMoneyRequest(
     chatReport,
@@ -1466,8 +1478,8 @@ function payMoneyRequest(paymentType, chatReport, iouReport) {
  * @param {String} reportID
  */
 function startMoneyRequest(iouType, reportID = '') {
-    resetMoneyRequestInfo(`${iouType}${reportID}`);
-    Navigation.navigate(ROUTES.getMoneyRequestRoute(iouType, reportID));
+    const {currency} = resetMoneyRequestInfo(`${iouType}${reportID}`);
+    Navigation.navigate(ROUTES.getMoneyRequestRoute(iouType, reportID, currency));
 }
 
 /**
@@ -1526,8 +1538,9 @@ function createEmptyTransaction() {
  * @param {String} iouType
  * @param {String} reportID
  * @param {Object} report
+ * @param {String} currency
  */
-function navigateToNextPage(iou, iouType, reportID, report) {
+function navigateToNextPage(iou, iouType, reportID, report, currency) {
     const moneyRequestID = `${iouType}${reportID}`;
     const shouldReset = iou.id !== moneyRequestID;
     // If the money request ID in Onyx does not match the ID from params, we want to start a new request
@@ -1549,10 +1562,10 @@ function navigateToNextPage(iou, iouType, reportID, report) {
                       .value();
             setMoneyRequestParticipants(participants);
         }
-        Navigation.navigate(ROUTES.getMoneyRequestConfirmationRoute(iouType, reportID));
+        Navigation.navigate(ROUTES.getMoneyRequestConfirmationRoute(iouType, reportID, currency));
         return;
     }
-    Navigation.navigate(ROUTES.getMoneyRequestParticipantsRoute(iouType));
+    Navigation.navigate(ROUTES.getMoneyRequestParticipantsRoute(iouType, undefined, currency));
 }
 
 export {

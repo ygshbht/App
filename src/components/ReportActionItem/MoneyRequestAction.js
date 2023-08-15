@@ -86,11 +86,11 @@ const defaultProps = {
 
 function MoneyRequestAction(props) {
     const isSplitBillAction = lodashGet(props.action, 'originalMessage.type', '') === CONST.IOU.REPORT_ACTION_TYPE.SPLIT;
-
+    const currency = lodashGet(props.route, 'params.currency') || props.iouReport.currency;
     const onIOUPreviewPressed = () => {
         if (isSplitBillAction) {
             const reportActionID = lodashGet(props.action, 'reportActionID', '0');
-            Navigation.navigate(ROUTES.getSplitBillDetailsRoute(props.chatReportID, reportActionID));
+            Navigation.navigate(ROUTES.getSplitBillDetailsRoute(props.chatReportID, reportActionID, currency));
             return;
         }
 

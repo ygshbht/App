@@ -49,12 +49,14 @@ function MoneyRequestParticipantsPage(props) {
     const iouType = useRef(lodashGet(props.route, 'params.iouType', ''));
     const reportID = useRef(lodashGet(props.route, 'params.reportID', ''));
 
+    const currency = lodashGet(props.route, 'params.currency', '') || props.iou.currency;
+
     const navigateToNextStep = () => {
-        Navigation.navigate(ROUTES.getMoneyRequestConfirmationRoute(iouType.current, reportID.current));
+        Navigation.navigate(ROUTES.getMoneyRequestConfirmationRoute(iouType.current, reportID.current, currency));
     };
 
     const navigateBack = (forceFallback = false) => {
-        Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType.current, reportID.current), forceFallback);
+        Navigation.goBack(ROUTES.getMoneyRequestRoute(iouType.current, reportID.current, currency), forceFallback);
     };
 
     useEffect(() => {

@@ -346,6 +346,7 @@ function MoneyRequestConfirmationList(props) {
 
         return ReceiptGeneric;
     };
+    const currency = props.iouCurrencyCode;
 
     return (
         <OptionsSelector
@@ -374,7 +375,7 @@ function MoneyRequestConfirmationList(props) {
                     shouldShowRightIcon={!props.isReadOnly}
                     title={formattedAmount}
                     description={translate('iou.amount')}
-                    onPress={() => Navigation.navigate(ROUTES.getMoneyRequestAmountRoute(props.iouType, props.reportID))}
+                    onPress={() => Navigation.navigate(ROUTES.getMoneyRequestAmountRoute(props.iouType, props.reportID, currency))}
                     style={[styles.moneyRequestMenuItem, styles.mt2]}
                     titleStyle={styles.moneyRequestConfirmationAmount}
                     disabled={didConfirm || props.isReadOnly}
@@ -384,7 +385,7 @@ function MoneyRequestConfirmationList(props) {
                 shouldShowRightIcon={!props.isReadOnly}
                 title={props.iouComment}
                 description={translate('common.description')}
-                onPress={() => Navigation.navigate(ROUTES.getMoneyRequestDescriptionRoute(props.iouType, props.reportID))}
+                onPress={() => Navigation.navigate(ROUTES.getMoneyRequestDescriptionRoute(props.iouType, props.reportID, currency))}
                 style={[styles.moneyRequestMenuItem, styles.mb2]}
                 disabled={didConfirm || props.isReadOnly}
             />
